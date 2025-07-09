@@ -1,0 +1,11 @@
+# requirements/base.txt
+fastapi==0.95.2
+uvicorn==0.22.0
+pydantic==1.10.7
+python-jose==3.3.0
+passlib==1.7.4
+boto3==1.26.135
+redis==4.5.5
+python-multipart==0.0.6
+prometheus-client==0.17.0
+gunicorn==20.1.0
