@@ -1,26 +1,14 @@
-# infrastructure/auth/jwt_handler.py
-from jose import JWTError, jwt
-from datetime import datetime, timedelta
-from app.domain.exceptions import UnauthorizedAccessError
+from jose import jwt, JWTError
+from fastapi import HTTPException, status
 import os
 
-# Configuration (should be in settings)
-SECRET_KEY = os.getenv("JWT_SECRET", "your-secret-key")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
+SECRET_KEY = os.getenv("JWT_SECRET", "secret")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-
-def validate_token(token: str) -> str:
+def validate_jwt_user_scope(token: str, user_id: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise UnauthorizedAccessError()
-        return user_id
+        if payload.get("sub") != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Token does not match user_id")
     except JWTError:
-        raise UnauthorizedAccessError()
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")

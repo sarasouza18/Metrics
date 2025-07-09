@@ -1,13 +1,24 @@
 # main.py
+
 from fastapi import FastAPI
 from infrastructure.api.routes import router as api_router
-from infrastructure.api.middlewares import add_middlewares
+from infrastructure.monitoring.prometheus import setup_metrics
 
 app = FastAPI(
     title="User Metrics API",
-    description="Secure API for user metrics with JWT authentication",
     version="1.0.0"
 )
 
+setup_metrics(app)
+
 app.include_router(api_router)
-add_middlewares(app)
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
