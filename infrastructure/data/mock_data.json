@@ -1,0 +1,35 @@
+{
+  "database": [
+    {
+      "post_id": "123",
+      "type": "post",
+      "user_id": "1",
+      "content": "Amazing berry discovery!",
+      "likes": 25,
+      "shares": 5,
+      "timestamp": "2024-01-15T10:30:00Z",
+      "berry_name": "cheri-berry",
+      "berry_flavors": ["spicy", "dry"]
+    },
+    {
+      "comment_id": "456",
+      "type": "comment",
+      "user_id": "1",
+      "post_id": "123",
+      "content": "This berry tastes amazing!",
+      "sentiment": "positive",
+      "timestamp": "2024-01-15T11:00:00Z",
+      "flavor_reference": "sweet"
+    },
+    {
+      "comment_id": "789",
+      "type": "comment",
+      "user_id": "2",
+      "post_id": "123",
+      "content": "Great find!",
+      "sentiment": "positive",
+      "timestamp": "2024-01-15T11:30:00Z",
+      "flavor_reference": "spicy"
+    }
+  ]
+}

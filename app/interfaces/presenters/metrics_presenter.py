@@ -1,31 +1,30 @@
 # app/interfaces/presenters/metrics_presenter.py
 
-from app.use_cases.metrics_interface import MetricsPresenterInterface
+from abc import ABC, abstractmethod
 from datetime import datetime
+from app.domain.entities import UserMetrics
+
+
+class MetricsPresenterInterface(ABC):
+    @abstractmethod
+    def present(self, metrics: UserMetrics, user_id: str, last_updated: datetime) -> dict:
+        pass
+
 
 class MetricsPresenter(MetricsPresenterInterface):
-    def present(self, metrics: dict, user_id: str, last_updated: datetime) -> dict:
-        # Expects metrics to contain: likeCount, sharesCount, sentiments (dict)
-        sentiments = metrics.get("sentiments", {})
-        total = sum(sentiments.values())
-
-        pie_chart = [
-            {
-                "category": key,
-                "value": value,
-                "percentage": round((value / total) * 100, 2) if total > 0 else 0
-            }
-            for key, value in sentiments.items()
-        ]
-
+    def present(self, metrics: UserMetrics, user_id: str, last_updated: datetime) -> dict:
         return {
-            "userId": user_id,
-            "metrics": {
-                "sharesCount": metrics.get("sharesCount", 0),
-                "likeCount": metrics.get("likeCount", 0),
-            },
-            "chartData": {
-                "pieChart": pie_chart
-            },
-            "lastUpdated": last_updated.isoformat()
+            "user_id": user_id,
+            "shares_count": metrics.shares_count,
+            "like_count": metrics.like_count,
+            "positive_comment_count": metrics.positive_comment_count,
+            "pie_chart": [
+                {
+                    "category": item.category,
+                    "value": item.value,
+                    "percentage": item.percentage,
+                }
+                for item in metrics.pie_chart
+            ],
+            "last_updated": last_updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
         }

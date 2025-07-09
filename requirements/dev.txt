@@ -7,3 +7,8 @@ black==23.3.0
 isort==5.12.0
 mypy==1.2.0
 ipdb==0.13.9
+python-jose
+prometheus-fastapi-instrumentator
+boto3==1.28.57
+botocore==1.31.57
+redis[asyncio]==4.5.5

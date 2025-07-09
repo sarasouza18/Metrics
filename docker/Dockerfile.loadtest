@@ -1,0 +1,8 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+COPY scripts/simulate_metrics_flow.py .
+
+RUN pip install aiohttp python-jose
+
+CMD ["python", "simulate_metrics_flow.py"]

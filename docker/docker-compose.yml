@@ -5,6 +5,8 @@ services:
       dockerfile: docker/Dockerfile
     ports:
       - "8000:8000"
+    env_file:
+      - ../.env
     environment:
       - APP_ENV=development
       - REDIS_URL=redis://redis:6379
@@ -17,6 +19,11 @@ services:
       - ../app:/app/app
       - ../infrastructure:/app/infrastructure
       - ../requirements:/app/requirements
+    command: >
+      sh -c "python /app/infrastructure/scripts/create_dynamodb_tables.py &&
+            sleep 3 &&
+            python /app/infrastructure/scripts/seed_dynamodb.py &&
+            exec gunicorn main:app -k uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
     depends_on:
       - redis
       - dynamodb-local
@@ -53,6 +60,14 @@ services:
       - ./docker/prometheus:/etc/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+  load-tester:
+    build:
+      context: .
+      dockerfile: Dockerfile.loadtest
+    depends_on:
+      - app
+    environment:
+      - PYTHONUNBUFFERED=1
 
 volumes:
   redis_data:

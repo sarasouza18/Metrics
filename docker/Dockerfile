@@ -12,6 +12,7 @@ RUN mkdir -p /app/metrics
 COPY ../requirements ./requirements
 
 RUN pip install --no-cache-dir -r requirements/dev.txt
+RUN pip install boto3 python-dotenv
 
 COPY .. .
 
@@ -21,4 +22,5 @@ ENV PROMETHEUS_MULTIPROC_DIR=/app/metrics
 
 EXPOSE 8000
 
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "infrastructure.api.routes:app"]
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "main:app"]
+
