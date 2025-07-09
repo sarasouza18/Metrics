@@ -5,6 +5,7 @@ from app.domain.entities import UserMetrics
 from app.domain.exceptions import MetricsNotFoundError
 from app.use_cases.metrics_interface import MetricsRepositoryInterface, MetricsPresenterInterface
 from infrastructure.repositories.redis_cache import RedisCache
+from infrastructure.search.opensearch_publisher import OpenSearchPublisher
 
 
 class MetricsInteractor:
@@ -13,10 +14,12 @@ class MetricsInteractor:
         repository: MetricsRepositoryInterface,
         presenter: MetricsPresenterInterface,
         cache: Optional[RedisCache] = None,
+        publisher: Optional[OpenSearchPublisher] = None,  
     ):
         self.repository = repository
         self.presenter = presenter
         self.cache = cache
+        self.publisher = publisher 
 
     async def get_user_metrics(self, user_id: str) -> dict:
         # Attempt to fetch from cache
@@ -41,5 +44,8 @@ class MetricsInteractor:
         # Save in cache for future requests
         if self.cache is not None:
             await self.cache.set(user_id, result, ttl=60)
+
+        if self.publisher is not None:
+            await self.publisher.publish_metrics(user_id, result)
 
         return result
